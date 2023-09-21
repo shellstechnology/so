@@ -11,33 +11,50 @@ texto="$2"
     --button=Aceptar
 }
 
-ListG() {
-titulo=' * Listado de Grupo * '
-listado=$(cat /etc/group | tail)
-texto="<span>$listado</span>!\n$sal"
-infoYad "$titulo" "$texto"
-}
-
-ConsG() {
+AltaG() {
 grp=grp
 sal=$(yad --form \
-  --title=" * Consulta de grupo * " \
+  --title=" * Alta de grupo * " \
+  --width=400 \
+  --height=100 \
+  --center \
+  --field="Nombre de grupo : " "$grp" )
+if [ $? -ne 0 ]; then return; fi # Escape, Cancelar, cruz : vuelvo al invocante
+grp=$(echo $sal | cut -f1 -d'|')
+vga='sudo groupadd '$grp
+sal=$(echo $vga | bash 2>&1)
+res=$?
+titulo=' * ALTA de GRUPO * '
+if [ $res -eq 0 ]
+then
+  texto="<span weight=\"bold\" foreground=\"green\">Alta : </span> exitosa !"
+  infoYad "$titulo" "$texto"
+else
+  texto="<span weight=\"bold\" foreground=\"red\">Alta : </span> fallida ! ($sal)"
+  infoYad "$titulo" "$texto"
+fi
+}
+
+BajaG() {
+grp=grp
+sal=$(yad --form \
+  --title=" * Baja de grupo * " \
   --width=400 \
   --height=100 \
   --center \
   --field="Nombre de grupo : " "$grp" )
 if [ $? -ne 0 ]; then return; fi 
 grp=$(echo $sal | cut -f1 -d'|')
-vgc='grep '$grp' '/etc/group
-sal=$(echo $vgc | bash 2>&1)
+vgd='sudo groupdel '$grp
+sal=$(echo $vgd | bash 2>&1)
 res=$?
-titulo=' * CONSULTA de GRUPO * '
+titulo=' * BAJA de GRUPO * '
 if [ $res -eq 0 ]
 then
-  texto="<span weight=\"bold\" foreground=\"green\">Consulta : </span> exitosa !\n$sal"
+  texto="<span weight=\"bold\" foreground=\"green\">Baja : </span> exitosa !"
   infoYad "$titulo" "$texto"
 else
-  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> fallida !(grupo $grp NO EXISTE)"
+  texto="<span weight=\"bold\" foreground=\"red\">Baja : </span> fallida ! ($sal)"
   infoYad "$titulo" "$texto"
 fi
 }
@@ -69,36 +86,48 @@ else
 fi
 }
 
-BajaG() {
+
+ConsG() {
 grp=grp
 sal=$(yad --form \
-  --title=" * Baja de grupo * " \
+  --title=" * Consulta de grupo * " \
   --width=400 \
   --height=100 \
   --center \
   --field="Nombre de grupo : " "$grp" )
 if [ $? -ne 0 ]; then return; fi 
 grp=$(echo $sal | cut -f1 -d'|')
-vgd='sudo groupdel '$grp
-sal=$(echo $vgd | bash 2>&1)
+vgc='grep '$grp' '/etc/group
+sal=$(echo $vgc | bash 2>&1)
 res=$?
-titulo=' * BAJA de GRUPO * '
+titulo=' * CONSULTA de GRUPO * '
 if [ $res -eq 0 ]
 then
-  texto="<span weight=\"bold\" foreground=\"green\">Baja : </span> exitosa !"
+  texto="<span weight=\"bold\" foreground=\"green\">Consulta : </span> exitosa !\n$sal"
   infoYad "$titulo" "$texto"
 else
-  texto="<span weight=\"bold\" foreground=\"red\">Baja : </span> fallida ! ($sal)"
+  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> fallida !(grupo $grp NO EXISTE)"
   infoYad "$titulo" "$texto"
 fi
 }
+
+ListG() {
+titulo=' * Listado de Grupo * '
+listado=$(cat /etc/group | tail)
+texto="<span>$listado</span>!\n$sal"
+infoYad "$titulo" "$texto"
+}
+
+
+
+
 
 AltaU() {
 usr=jperez
 dir=/home/jperez
 com='comentario con espacios'
-pas=secreta
-par=secreta
+pas=s3cretA.34
+par=s3cretA.34
 vcs=25/10/2023
 usuario=$(yad --form \
   --title="Alta de usuario" \
@@ -132,8 +161,8 @@ echo -e password again : "\t" $par
 echo -e password expired : "\t" $vcs
 echo -e shell : "\t\t" $idc
 
-vua='useradd -d '$dir' -m -c "'$com'" -s '$idc' '$usr
-vua='useradd -d '$dir' -m -c '\'$com\'' -s '$idc' '$usr
+vua='sudo useradd -d '$dir' -m -c "'$com'" -s '$idc' '$usr
+vua='sudo useradd -d '$dir' -m -c '\'$com\'' -s '$idc' '$usr
 echo $vua 
 echo $vua | bash
 res=$?
@@ -165,11 +194,11 @@ BajaU(){
 usr=jperez
 dir=/home/jperez
 com='comentario con espacios'
-pas=secreta
-par=secreta
+pas=s3cretA.34
+par=s3cretA.34
 vcs=25/10/2023
 usuario=$(yad --form \
-  --title="Alta de usuario" \
+  --title="Baja de usuario" \
   --date-format="%-d/%m/%Y" \
   --width=400 \
   --height=300 \
@@ -200,55 +229,52 @@ echo -e password again : "\t" $par
 echo -e password expired : "\t" $vcs
 echo -e shell : "\t\t" $idc
 
-vua='useradd -d '$dir' -m -c "'$com'" -s '$idc' '$usr
-vua='useradd -d '$dir' -m -c '\'$com\'' -s '$idc' '$usr
+vua='sudo userdel -d '$dir' -m -c "'$com'" -s '$idc' '$usr
+vua='sudo userdel -d '$dir' -m -c '\'$com\'' -s '$idc' '$usr
 echo $vua 
 echo $vua | bash
 res=$?
-titulo=' * ALTA de USUARIO * '
+titulo=' * Baja de USUARIO * '
 if [ $res -eq 0 ]
 then
-  texto="<span weight=\"bold\" foreground=\"green\">Alta : </span> exitosa !"
+  texto="<span weight=\"bold\" foreground=\"green\">Baja : </span> exitosa !"
   infoYad "$titulo" "$texto"
 else
-  texto="<span weight=\"bold\" foreground=\"green\">Alta : </span> fallida !"
+  texto="<span weight=\"bold\" foreground=\"green\">Baja : </span> fallida !"
   infoYad "$titulo" "$texto"
 fi
 
-echo $usr:$pwd | chpasswd
+}
+
+ConsU() {
+usr=usr
+sal=$(yad --form \
+  --title=" * Consulta de Usuario * " \
+  --width=400 \
+  --height=100 \
+  --center \
+  --field="Nombre de Usuario : " "$usr" )
+if [ $? -ne 0 ]; then return; fi 
+usr=$(echo $sal | cut -f1 -d'|')
+vgc='grep '$usr' '/etc/passwd
+sal=$(echo $vgc | bash 2>&1)
 res=$?
+titulo=' * CONSULTA de Usuario * '
 if [ $res -eq 0 ]
 then
-  texto="<span weight=\"bold\" foreground=\"green\">asignación contraseña : </span> exitosa !"
+  texto="<span weight=\"bold\" foreground=\"green\">Consulta : </span> exitosa !\n$sal"
   infoYad "$titulo" "$texto"
 else
-  texto="<span weight=\"bold\" foreground=\"green\">asignación contraseña : </span> fallida !"
+  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> fallida !(Usuario $usr NO EXISTE)"
   infoYad "$titulo" "$texto"
 fi
 }
 
-AltaG() {
-grp=grp
-sal=$(yad --form \
-  --title=" * Alta de grupo * " \
-  --width=400 \
-  --height=100 \
-  --center \
-  --field="Nombre de grupo : " "$grp" )
-if [ $? -ne 0 ]; then return; fi # Escape, Cancelar, cruz : vuelvo al invocante
-grp=$(echo $sal | cut -f1 -d'|')
-vga='sudo groupadd '$grp
-sal=$(echo $vga | bash 2>&1)
-res=$?
-titulo=' * ALTA de GRUPO * '
-if [ $res -eq 0 ]
-then
-  texto="<span weight=\"bold\" foreground=\"green\">Alta : </span> exitosa !"
-  infoYad "$titulo" "$texto"
-else
-  texto="<span weight=\"bold\" foreground=\"red\">Alta : </span> fallida ! ($sal)"
-  infoYad "$titulo" "$texto"
-fi
+ListU() {
+titulo=' * Listado de Usuarios * '
+listado=$(cat /etc/passwd | tail)
+texto="<span>$listado</span>!\n$sal"
+infoYad "$titulo" "$texto"
 }
 
 Usuarios() {

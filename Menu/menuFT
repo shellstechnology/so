@@ -13,15 +13,9 @@ texto="$2"
 
 ListG() {
 titulo=' * Listado de Grupo * '
-sal=$(yad --form \
-  --title=" * Listado de grupos * " \
-  --width=400 \
-  --height=600 \
-  --center \
-  --text="${texto}" --wrap\
-  --button=Aceptar )
-listado=$(cat /etc/group)
+listado=$(cat /etc/group | tail)
 texto="<span>$listado</span>!\n$sal"
+infoYad "$titulo" "$texto"
 }
 
 ConsG() {
@@ -61,7 +55,7 @@ sal=$(yad --form \
 if [ $? -ne 0 ]; then return; fi 
 grp=$(echo $sal | cut -f1 -d'|')
 ngrp=$(echo $sal | cut -f2 -d'|')
-vgm='groupmod -n '$ngrp' '$grp
+vgm='sudo groupmod -n '$ngrp' '$grp
 sal=$(echo $vgm | bash 2>&1)
 res=$?
 titulo=' * MODIFICACIÓN de GRUPO * '

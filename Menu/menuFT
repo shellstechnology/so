@@ -12,12 +12,16 @@ texto="$2"
 }
 
 ListG() {
-yad --form \
+titulo=' * Listado de Grupo * '
+sal=$(yad --form \
   --title=" * Listado de grupos * " \
   --width=400 \
-  --height=100 \
+  --height=600 \
   --center \
-  --field="Nombre de grupo : " "$grp" 
+  --text="${texto}" --wrap\
+  --button=Aceptar )
+listado=$(cat /etc/group)
+texto="<span>$listado</span>!\n$sal"
 }
 
 ConsG() {

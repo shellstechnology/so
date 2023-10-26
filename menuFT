@@ -19,7 +19,7 @@ sal=$(yad --form \
   --height=100 \
   --center \
   --field="Nombre de grupo : " "$grp" )
-if [ $? -ne 0 ]; then return; fi # Escape, Cancelar, cruz : vuelvo al invocante
+if [ $? -ne 0 ]; then return; fi 
 grp=$(echo $sal | cut -f1 -d'|')
 vga='sudo groupadd '$grp
 sal=$(echo $vga | bash 2>&1)
@@ -318,6 +318,38 @@ do
 done
 }
 
+Servicios(){
+  while true
+do
+  opcion=$(yad --list \
+    --title=" * MENU Mantenimiento * " \
+    --height=200 \
+    --width=300 \
+    --button=Aceptar:0 \
+    --center \
+    --text="Seccion de Mantenimiento : " \
+    --column="Servicio / Logs" \
+    "MySQL (database)" "Servidor Web (apache)" "Acceso a logs" "Salir (Esc)")
+  ans=$?
+  if [ $ans -eq 0 ]
+  then
+    case $opcion in
+    MySQL*)
+      MySQL;;
+    Servidor*)
+      ServidorWeb;;
+    Acceso*)
+      /home/SISFTadmin/SI/logViewer;;
+    Salir*)
+      exit;;
+    esac
+  else
+    exit
+  fi
+done
+
+}
+
 while true
 do
   opcion=$(yad --list \
@@ -328,7 +360,7 @@ do
     --center \
     --text="Selecciona grupos o usuarios : " \
     --column="ABM G / U" \
-    "Grupos" "Usuarios" "Salir (Esc)")
+    "Grupos" "Usuarios" "Servicios" "Salir (Esc)")
   ans=$?
   if [ $ans -eq 0 ]
   then
@@ -337,6 +369,8 @@ do
       Grupos;;
     Usuarios*)
       Usuarios;;
+    Servicios*)
+      Servicios;;
     Salir*)
       exit;;
     esac

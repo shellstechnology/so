@@ -1,0 +1,4 @@
+fecha=$(date +%Y%m%d)
+echo Respaldo iniciado : $(date)
+mysqldump --no-tablespaces SISFTdb -u SISFTadmin > /home/SISFTadmin/bkp/My$fecha.sql
+echo Respaldo finalizado : $(date)

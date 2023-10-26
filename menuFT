@@ -118,6 +118,109 @@ texto="<span>$listado</span>!\n$sal"
 infoYad "$titulo" "$texto"
 }
 
+Logs(){
+titulo=' * Logs * '
+archivo=$(yad --file \
+              --file-selection \
+              --save \
+              --title="Ver logs" \
+              --height=200 \
+              --width=100 \
+              --center \
+              --text="Selecciona un archivo:" \
+              --file-filter="logs | *.out")
+ans=$?
+logSeleccionado=$(echo $sal | cut -f1 -d'|')
+log=$('cat' $archivo)
+if [ $ans -eq 0 ]
+then
+    texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> exitosa !\n $log"
+    infoYad "$titulo" "$texto"
+fi
+}
+
+ServiciosEIA(){
+titulo=' * Servicios * '
+servicio=$(yad --list \
+                 --title="Servicios" \
+                 --height=200 \
+                 --width=100 \
+                 --button=Aceptar:0 \
+                 --button=Salir:1 \
+                 --center \
+                 --text="Elige un servicio" \
+                 --radiolist \
+                 --column="" \
+                 --column="Servicio" \
+                 1 "MySQL" 2 "Apache" 3 "SSH" )
+ans=$?
+echo $ans
+servicioElegido=$(echo $servicio | cut -d'|' -f2)
+echo $servicioElegido
+accion=$(yad --list \
+                 --title="Acciones" \
+                 --height=200 \
+                 --width=100 \
+                 --button=Aceptar:0 \
+                 --button=Salir:1 \
+                 --center \
+                 --text="Elige una acción" \
+                 --radiolist \
+                 --column="" \
+                 --column="Acción" \
+                 1 "Estado" 2 "Iniciar" 3 "Apagar" )
+ans=$?
+echo $ans
+accionElegida=$(echo $accion | cut -d'|' -f2)
+echo $accionElegida
+    case $accionElegida in 
+        Estado*)
+            case $servicioElegido in 
+                MySQL*)
+                texto="$(systemctl status mysqld)"
+                infoYad "$titulo" "$texto";;
+                Apache*)
+                texto="$(systemctl status httpd)"
+                infoYad "$titulo" "$texto";;
+                SSH*)
+                texto="$(systemctl status sshd)"
+                infoYad "$titulo" "$texto";;
+            esac
+        ;;
+        Iniciar*) 
+            case $2 in 
+                MySQL*)
+                sudo systemctl start mysqld 2> err
+                texto="$(sudo systemctl status mysqld)"
+                infoYad "$titulo" "$texto";;
+                Apache*)
+                sudo systemctl start httpd 2> err
+                texto="$(sudo systemctl status httpd)"
+                infoYad "$titulo" "$texto";;
+                SSH*)
+                sudo systemctl start sshd 2> err
+                texto="$(sudo systemctl status sshd)"
+                infoYad "$titulo" "$texto";;
+            esac
+        ;;
+        Apagar*)
+            case $2 in 
+                MySQL*)                
+                sudo systemctl stop mysqld
+                texto="$(sudo systemctl status mysqld 2> err)"
+                infoYad "$titulo" "$texto";;
+                Apache*)
+                sudo systemctl stop httpd
+                texto="$(sudo systemctl status httpd 2> err)"
+                infoYad "$titulo" "$texto";;
+                SSH*)
+                sudo systemctl stop sshd
+                texto="$(sudo systemctl status sshd 2> err)"
+                infoYad "$titulo" "$texto";;
+            esac
+        ;;
+    esac
+}
 
 AltaU() {
 usr=jperezw
@@ -248,6 +351,8 @@ texto="<span>$listado</span>!\n$sal"
 infoYad "$titulo" "$texto"
 }
 
+
+
 Usuarios() {
 while true
 do
@@ -319,7 +424,7 @@ done
 }
 
 Servicios(){
-  while true
+while true
 do
   opcion=$(yad --list \
     --title=" * MENU Mantenimiento * " \
@@ -329,17 +434,15 @@ do
     --center \
     --text="Seccion de Mantenimiento : " \
     --column="Servicio / Logs" \
-    "MySQL (database)" "Servidor Web (apache)" "Acceso a logs" "Salir (Esc)")
+    "Verificar Estados" "Acceso a logs" "Salir (Esc)")
   ans=$?
   if [ $ans -eq 0 ]
   then
     case $opcion in
-    MySQL*)
-      MySQL;;
-    Servidor*)
-      ServidorWeb;;
+    Verificar*)
+      ServiciosEIA;;
     Acceso*)
-      /home/SISFTadmin/SI/logViewer;;
+      Logs;;
     Salir*)
       exit;;
     esac
@@ -353,13 +456,13 @@ done
 while true
 do
   opcion=$(yad --list \
-    --title=" * MENU grupos y usuarios * " \
+    --title=" * MENU grupos, usuarios y servicios * " \
     --height=200 \
     --width=300 \
     --button=Aceptar:0 \
     --center \
-    --text="Selecciona grupos o usuarios : " \
-    --column="ABM G / U" \
+    --text="Selecciona grupos, usuarios o servicios : " \
+    --column="ABM G / U / S" \
     "Grupos" "Usuarios" "Servicios" "Salir (Esc)")
   ans=$?
   if [ $ans -eq 0 ]

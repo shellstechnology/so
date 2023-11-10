@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  apache:
+    container_name: servidor_web
+    build:
+      context: ./image/_php8_apache
+    depends_on:
+      - mysql
+    ports:
+      - 80:80
+    volumes:
+      - /var/www:/var/www
+    links:
+      - 'mysql'
+  mysql:
+    container_name: servidor_db
+    build: 
+      context: ./image/mysql8
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=no
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_USER= 'apacheweb'
+      - MYSQL_PASSWORD= '12354'
+      - MYSQL_DATABASE= 'fast_tracker_db'

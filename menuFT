@@ -188,35 +188,95 @@ echo $accionElegida
             esac
         ;;
         Iniciar*) 
-            case $2 in 
+            case $servicioElegido in 
                 MySQL*)
-                sudo systemctl start mysqld 2> err
-                texto="$(sudo systemctl status mysqld)"
-                infoYad "$titulo" "$texto";;
+                sudo systemctl start mysqld
+                res=$?
+                echo $res
+                estado=$(systemctl status mysqld | head)
+                echo $estado
+                if [ $res -eq 0 ]
+                then
+                  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> exitosa !\n $estado"
+                  infoYad "$titulo" "$texto"
+                else
+                  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> fallida !"
+                  infoYad "$titulo" "$texto"
+                fi;;
                 Apache*)
-                sudo systemctl start httpd 2> err
-                texto="$(sudo systemctl status httpd)"
-                infoYad "$titulo" "$texto";;
+                sudo systemctl start httpd
+                res=$?
+                echo $res
+                estado=$(systemctl status httpd | head)
+                echo $estado
+                if [ $res -eq 0 ]
+                then
+                  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> exitosa !\n $estado"
+                  infoYad "$titulo" "$texto"
+                else
+                  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> fallida !"
+                  infoYad "$titulo" "$texto"
+                fi;;
                 SSH*)
-                sudo systemctl start sshd 2> err
-                texto="$(sudo systemctl status sshd)"
-                infoYad "$titulo" "$texto";;
+                sudo systemctl start sshd
+                res=$?
+                echo $res
+                estado=$(systemctl status sshd | head)
+                echo $estado
+                if [ $res -eq 0 ]
+                then
+                  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> exitosa !\n $estado"
+                  infoYad "$titulo" "$texto"
+                else
+                  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> fallida !"
+                  infoYad "$titulo" "$texto"
+                fi;;
             esac
         ;;
         Apagar*)
-            case $2 in 
+            case $servicioElegido in 
                 MySQL*)                
                 sudo systemctl stop mysqld
-                texto="$(sudo systemctl status mysqld 2> err)"
-                infoYad "$titulo" "$texto";;
+                res=$?
+                echo $res
+                estado=$(systemctl status mysqld | head)
+                echo $estado
+                if [ $res -eq 0 ]
+                then
+                  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> exitosa !\n $estado"
+                  infoYad "$titulo" "$texto"
+                else
+                  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> fallida !"
+                  infoYad "$titulo" "$texto"
+                fi;;
                 Apache*)
                 sudo systemctl stop httpd
-                texto="$(sudo systemctl status httpd 2> err)"
-                infoYad "$titulo" "$texto";;
+                res=$?
+                echo $res
+                estado=$(systemctl status httpd | head)
+                echo $estado
+                if [ $res -eq 0 ]
+                then
+                  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> exitosa !\n $estado"
+                  infoYad "$titulo" "$texto"
+                else
+                  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> fallida !"
+                  infoYad "$titulo" "$texto"
+                fi;;
                 SSH*)
                 sudo systemctl stop sshd
-                texto="$(sudo systemctl status sshd 2> err)"
-                infoYad "$titulo" "$texto";;
+                res=$?
+                echo $res
+                estado=$(systemctl status sshd | head)
+                echo $estado
+                if [ $res -eq 0 ]
+                then
+                  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> exitosa !\n $estado"
+                  infoYad "$titulo" "$texto"
+                else
+                  texto="<span weight=\"bold\" foreground=\"red\">Consulta : </span> fallida !"
+                  infoYad "$titulo" "$texto"
+                fi;;
             esac
         ;;
     esac

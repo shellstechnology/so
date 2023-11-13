@@ -14,7 +14,7 @@ services:
       - 'mysql'
   mysql:
     container_name: servidor_db
-    build: 
+    build:
       context: ./image/mysql8
     ports:
       - 3306:3306
@@ -24,3 +24,17 @@ services:
       - MYSQL_USER= 'apacheweb'
       - MYSQL_PASSWORD= '12354'
       - MYSQL_DATABASE= 'fast_tracker_db'
+    volumes:
+      - "./mysql:/var/lib/mysql"
+  openssh-server:
+    image: lscr.io/linuxserver/openssh-server:latest
+    container_name: openssh-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /path/to/appdata/config:/config
+    ports:
+      - 2222:2222
+    restart: unless-stopped
